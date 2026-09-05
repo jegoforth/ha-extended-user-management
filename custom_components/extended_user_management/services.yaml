@@ -1,0 +1,84 @@
+set_pin:
+  name: Set PIN
+  description: Set or replace a person's PIN. Never call this from voice/conversation input -- it should only ever be admin-initiated.
+  fields:
+    person_entity_id:
+      name: Person
+      description: The person entity this PIN belongs to.
+      required: true
+      selector:
+        entity:
+          domain: person
+    pin:
+      name: PIN
+      description: 4-8 digit PIN.
+      required: true
+      selector:
+        text:
+
+clear_pin:
+  name: Clear PIN
+  description: Remove a person's PIN.
+  fields:
+    person_entity_id:
+      name: Person
+      description: The person entity to clear the PIN for.
+      required: true
+      selector:
+        entity:
+          domain: person
+
+verify_pin:
+  name: Verify PIN
+  description: "Check a submitted PIN against a person's stored PIN. Returns: verified, locked_out."
+  fields:
+    person_entity_id:
+      name: Person
+      description: The person entity the submitted PIN claims to belong to.
+      required: true
+      selector:
+        entity:
+          domain: person
+    pin:
+      name: PIN
+      description: The PIN to verify.
+      required: true
+      selector:
+        text:
+
+set_profile_value:
+  name: Set profile value
+  description: Set an arbitrary extended-profile key/value for a person.
+  fields:
+    person_entity_id:
+      name: Person
+      required: true
+      selector:
+        entity:
+          domain: person
+    key:
+      name: Key
+      required: true
+      selector:
+        text:
+    value:
+      name: Value
+      required: true
+      selector:
+        text:
+
+get_profile_value:
+  name: Get profile value
+  description: "Read an extended-profile key/value for a person. Returns: value."
+  fields:
+    person_entity_id:
+      name: Person
+      required: true
+      selector:
+        entity:
+          domain: person
+    key:
+      name: Key
+      required: true
+      selector:
+        text:
