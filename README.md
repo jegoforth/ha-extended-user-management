@@ -59,6 +59,41 @@ pass through `hass.states` — only as the immediate payload of a
 `set_pin`/`clear_pin` service call — so they never enter the recorder,
 history, or logbook.
 
+## Well-known profile keys
+
+`set_profile_value`/`get_profile_value` accept any key — this is a
+documented convention for interoperability between consumers (Elspeth,
+someone else's HA Assist automation, whatever), not something enforced in
+code. Using these names where they fit means multiple integrations can
+share the same household context instead of each inventing its own
+vocabulary.
+
+Values may be a scalar (string/boolean/number), a list of scalars, or a
+list of flat string-keyed records (for `important_people`).
+
+| Key | Type | Example | Notes |
+|---|---|---|---|
+| `preferred_name` | string | `"Shell"` | How they like to be addressed, distinct from the `person` entity's formal name |
+| `gender` | string | `"female"` | Free text, not a restricted enum — how a consuming integration uses this (e.g. pronoun selection) is its own decision, not part of this convention |
+| `occupation` | string | `"software engineer"` | |
+| `work_schedule` | string | `"remote, flexible hours"` | Free text, not structured — too varied to force into a schema |
+| `communication_style` | string | `"concise, direct recommendations"` | Useful to *any* conversation agent, not just Elspeth |
+| `hobbies` | list[string] | `["gardening", "chess"]` | |
+| `interests` | list[string] | `["Scottish history", "true crime podcasts"]` | Broader than hobbies — topics they like discussing |
+| `food_preferences` | list[string] | `["spicy food", "whole grains"]` | |
+| `food_restrictions` | list[string] | `["no nuts", "vegetarian"]` | Allergies/diet — household-relevant, not medical-sensitivity data |
+| `music_preferences` | list[string] | `["Fleetwood Mac", "classic rock"]` | |
+| `entertainment_preferences` | list[string] | `["Outlander", "true crime documentaries"]` | |
+| `important_people` | list[{name, relationship}] | `[{"name": "Grace", "relationship": "daughter"}]` | The one structured key |
+| `daily_routines` | string | `"morning run around 6am"` | |
+| `travel_preferences` | list[string] | `["historical sites", "quiet beach towns"]` | |
+| `current_focus` | string | `"planning a kitchen renovation"` | What's got their attention lately — deliberately not durable/permanent-feeling |
+
+This store is for household-shared, non-sensitive context by convention.
+Genuinely personal or sensitive facts belong in whatever
+tighter-controlled, conversation-gated memory system a consuming
+integration already has — not here.
+
 ## Security notes
 
 - PINs are never stored in plaintext — PBKDF2-HMAC-SHA256, 200,000

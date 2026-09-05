@@ -32,10 +32,19 @@ VERIFY_PIN_SCHEMA = vol.Schema({
     vol.Required(ATTR_PERSON_ENTITY_ID): PERSON_ENTITY_SCHEMA,
     vol.Required(ATTR_PIN): cv.string,
 })
+# A "simple JSON" value: a scalar, a list of scalars, or a list of flat
+# string-keyed records (e.g. important_people: [{"name": ..., "relationship": ...}]).
+# Deliberately generic rather than validating specific well-known keys --
+# those are a documented convention (see README), not something this
+# integration enforces in code.
+_SCALAR = vol.Any(cv.string, cv.boolean, vol.Coerce(float), None)
+_FLAT_RECORD = vol.Schema({cv.string: _SCALAR})
+PROFILE_VALUE_SCHEMA = vol.Any(_SCALAR, [_SCALAR], [_FLAT_RECORD])
+
 SET_PROFILE_VALUE_SCHEMA = vol.Schema({
     vol.Required(ATTR_PERSON_ENTITY_ID): PERSON_ENTITY_SCHEMA,
     vol.Required(ATTR_KEY): cv.string,
-    vol.Required(ATTR_VALUE): vol.Any(cv.string, cv.boolean, vol.Coerce(float), None),
+    vol.Required(ATTR_VALUE): PROFILE_VALUE_SCHEMA,
 })
 GET_PROFILE_VALUE_SCHEMA = vol.Schema({
     vol.Required(ATTR_PERSON_ENTITY_ID): PERSON_ENTITY_SCHEMA,
