@@ -82,3 +82,7 @@ get_profile_value:
       required: true
       selector:
         text:
+
+list_pin_status:
+  name: List PIN status
+  description: "List every person entity with whether a PIN is set and whether they're currently locked out. Returns: profiles."

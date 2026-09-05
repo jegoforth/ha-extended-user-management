@@ -21,9 +21,10 @@ integrations call into.
 ## Status
 
 Early scaffold. Core services (`set_pin`, `verify_pin`, `clear_pin`,
-`set_profile_value`, `get_profile_value`) and storage are implemented;
-config flow is a minimal single-instance hub (no dashboard/Lovelace card
-yet). Not yet published to HACS.
+`set_profile_value`, `get_profile_value`, `list_pin_status`) and storage
+are implemented, along with a Lovelace admin card for managing PINs.
+Config flow is a minimal single-instance hub. Not yet published to HACS,
+and not yet tested against a real Home Assistant instance.
 
 ## Services
 
@@ -34,6 +35,29 @@ yet). Not yet published to HACS.
 | `extended_user_management.verify_pin` | Check a submitted PIN against a person's stored PIN. Returns `{verified, locked_out}`. |
 | `extended_user_management.set_profile_value` | Set an arbitrary extended-profile key/value for a person. |
 | `extended_user_management.get_profile_value` | Read an extended-profile key/value for a person. Returns `{value}`. |
+| `extended_user_management.list_pin_status` | List every person entity with whether a PIN is set and whether they're locked out. Returns `{profiles: {<person_entity_id>: {has_pin, locked_out}}}`. |
+
+## Dashboard card
+
+The integration serves `extended-user-management-card.js` itself (no HACS
+frontend-resource registration needed) at:
+
+```
+/extended_user_management_files/extended-user-management-card.js
+```
+
+To use it:
+
+1. Settings → Dashboards → ⋮ (top right) → Resources → Add Resource.
+2. URL: the path above. Resource type: JavaScript Module.
+3. Add a card to any dashboard, type `Custom: Extended User Management` (or
+   add manually via YAML: `type: custom:extended-user-management-card`).
+
+The card lists every `person` entity, shows whether a PIN is set (never
+the PIN itself), and lets an admin set or clear one inline. PINs never
+pass through `hass.states` — only as the immediate payload of a
+`set_pin`/`clear_pin` service call — so they never enter the recorder,
+history, or logbook.
 
 ## Security notes
 
