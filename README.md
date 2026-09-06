@@ -55,10 +55,14 @@ To use it:
    add manually via YAML: `type: custom:extended-user-management-card`).
 
 The card lists every `person` entity, shows whether a PIN is set (never
-the PIN itself), and lets an admin set or clear one inline. PINs never
-pass through `hass.states` — only as the immediate payload of a
-`set_pin`/`clear_pin` service call — so they never enter the recorder,
-history, or logbook.
+the PIN itself), and lets an admin set or clear one inline. It also has a
+plain phone-number field per person (the `phone_number` well-known profile
+key, see below) for anything that matches callers by number, such as
+`find_person_by_phone`. PINs never pass through `hass.states` — only as
+the immediate payload of a `set_pin`/`clear_pin` service call — so they
+never enter the recorder, history, or logbook. Phone numbers are ordinary
+profile data, not a secret, so they round-trip through `get_profile_value`/
+`set_profile_value` and are shown in the field.
 
 ## Well-known profile keys
 
