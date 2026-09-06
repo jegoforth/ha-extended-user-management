@@ -18,6 +18,11 @@ This fills that gap as its own building block: it doesn't do anything
 voice-, lock-, or automation-specific itself. It's the layer other
 integrations call into.
 
+Known consumer: [Twilio Voice Assistant](https://github.com/jegoforth/twilio_voice_assistant)
+uses `find_person_by_phone` to match incoming callers, and relies on this
+integration entirely for phone number and PIN storage -- it is a required
+prerequisite for that App as of its current release.
+
 ## Status
 
 Early scaffold. Core services (`set_pin`, `verify_pin`, `clear_pin`,
