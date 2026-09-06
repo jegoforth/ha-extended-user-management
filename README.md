@@ -36,6 +36,7 @@ and not yet tested against a real Home Assistant instance.
 | `extended_user_management.set_profile_value` | Set an arbitrary extended-profile key/value for a person. |
 | `extended_user_management.get_profile_value` | Read an extended-profile key/value for a person. Returns `{value}`. |
 | `extended_user_management.list_pin_status` | List every person entity with whether a PIN is set and whether they're locked out. Returns `{profiles: {<person_entity_id>: {has_pin, locked_out}}}`. |
+| `extended_user_management.find_person_by_phone` | Reverse-lookup which person has a given phone number set (via `phone_number` profile key). Returns `{person_entity_id}` (`null` if no match). |
 
 ## Dashboard card
 
@@ -73,6 +74,7 @@ list of flat string-keyed records (for `important_people`).
 
 | Key | Type | Example | Notes |
 |---|---|---|---|
+| `phone_number` | string | `"+15551234567"` | E.164 recommended for exact-match reverse lookup via `find_person_by_phone` (e.g. matching a Twilio caller ID) |
 | `preferred_name` | string | `"Shell"` | How they like to be addressed, distinct from the `person` entity's formal name |
 | `gender` | string | `"female"` | Free text, not a restricted enum — how a consuming integration uses this (e.g. pronoun selection) is its own decision, not part of this convention |
 | `occupation` | string | `"software engineer"` | |

@@ -11,8 +11,9 @@ from homeassistant.core import HomeAssistant, ServiceCall, ServiceResponse, Supp
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
 
-from .const import (ATTR_HAS_PIN, ATTR_KEY, ATTR_LOCKED_OUT, ATTR_PERSON_ENTITY_ID, ATTR_PIN,
-                    ATTR_PROFILES, ATTR_VALUE, ATTR_VERIFIED, DOMAIN, SERVICE_CLEAR_PIN,
+from .const import (ATTR_HAS_PIN, ATTR_KEY, ATTR_LOCKED_OUT, ATTR_PERSON_ENTITY_ID,
+                    ATTR_PHONE_NUMBER, ATTR_PIN, ATTR_PROFILES, ATTR_VALUE, ATTR_VERIFIED,
+                    DOMAIN, SERVICE_CLEAR_PIN, SERVICE_FIND_PERSON_BY_PHONE,
                     SERVICE_GET_PROFILE_VALUE, SERVICE_LIST_PIN_STATUS, SERVICE_SET_PIN,
                     SERVICE_SET_PROFILE_VALUE, SERVICE_VERIFY_PIN)
 from .storage import ProfileStore
@@ -50,6 +51,7 @@ GET_PROFILE_VALUE_SCHEMA = vol.Schema({
     vol.Required(ATTR_PERSON_ENTITY_ID): PERSON_ENTITY_SCHEMA,
     vol.Required(ATTR_KEY): cv.string,
 })
+FIND_PERSON_BY_PHONE_SCHEMA = vol.Schema({vol.Required(ATTR_PHONE_NUMBER): cv.string})
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -100,6 +102,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         }
         return {ATTR_PROFILES: profiles}
 
+    async def handle_find_person_by_phone(call: ServiceCall) -> ServiceResponse:
+        store = _store_for(call)
+        return {ATTR_PERSON_ENTITY_ID: store.find_by_phone_number(call.data[ATTR_PHONE_NUMBER])}
+
     hass.services.async_register(DOMAIN, SERVICE_SET_PIN, handle_set_pin, schema=SET_PIN_SCHEMA)
     hass.services.async_register(DOMAIN, SERVICE_CLEAR_PIN, handle_clear_pin, schema=CLEAR_PIN_SCHEMA)
     hass.services.async_register(DOMAIN, SERVICE_VERIFY_PIN, handle_verify_pin,
@@ -110,6 +116,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                                  schema=GET_PROFILE_VALUE_SCHEMA, supports_response=SupportsResponse.ONLY)
     hass.services.async_register(DOMAIN, SERVICE_LIST_PIN_STATUS, handle_list_pin_status,
                                  schema=vol.Schema({}), supports_response=SupportsResponse.ONLY)
+    hass.services.async_register(DOMAIN, SERVICE_FIND_PERSON_BY_PHONE, handle_find_person_by_phone,
+                                 schema=FIND_PERSON_BY_PHONE_SCHEMA,
+                                 supports_response=SupportsResponse.ONLY)
 
     www_path = Path(__file__).parent / "www"
     await hass.http.async_register_static_paths(
@@ -123,6 +132,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if not hass.data[DOMAIN]:
         for service in (SERVICE_SET_PIN, SERVICE_CLEAR_PIN, SERVICE_VERIFY_PIN,
                         SERVICE_SET_PROFILE_VALUE, SERVICE_GET_PROFILE_VALUE,
-                        SERVICE_LIST_PIN_STATUS):
+                        SERVICE_LIST_PIN_STATUS, SERVICE_FIND_PERSON_BY_PHONE):
             hass.services.async_remove(DOMAIN, service)
     return True

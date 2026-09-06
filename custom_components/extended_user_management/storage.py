@@ -23,7 +23,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.storage import Store
 
 from . import pin as pin_module
-from .const import STORAGE_KEY, STORAGE_VERSION
+from .const import PROFILE_KEY_PHONE_NUMBER, STORAGE_KEY, STORAGE_VERSION
 
 
 def _empty_profile() -> dict:
@@ -73,3 +73,16 @@ class ProfileStore:
 
     def get_value(self, person_entity_id: str, key: str, default=None):
         return self._data["profiles"].get(person_entity_id, {}).get("extra", {}).get(key, default)
+
+    def find_by_phone_number(self, phone_number: str) -> str | None:
+        """Reverse-lookup a person by their stored phone_number profile value.
+
+        Callers (e.g. a Twilio integration matching an incoming caller ID)
+        already have a normalized phone number to compare with -- this does
+        an exact match only, no normalization of its own, since there is no
+        single canonical phone format this integration can assume.
+        """
+        for person_entity_id, record in self._data["profiles"].items():
+            if record.get("extra", {}).get(PROFILE_KEY_PHONE_NUMBER) == phone_number:
+                return person_entity_id
+        return None

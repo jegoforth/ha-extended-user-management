@@ -86,3 +86,14 @@ get_profile_value:
 list_pin_status:
   name: List PIN status
   description: "List every person entity with whether a PIN is set and whether they're currently locked out. Returns: profiles."
+
+find_person_by_phone:
+  name: Find person by phone
+  description: "Look up which person has this phone number set as their phone_number profile value. Returns: person_entity_id (null if no match)."
+  fields:
+    phone_number:
+      name: Phone number
+      description: The phone number to match, exactly as stored (e.g. via set_profile_value with key phone_number).
+      required: true
+      selector:
+        text:
