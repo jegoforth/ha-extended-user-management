@@ -84,6 +84,7 @@ list of flat string-keyed records (for `important_people`).
 | Key | Type | Example | Notes |
 |---|---|---|---|
 | `phone_number` | string | `"+15551234567"` | E.164 recommended for exact-match reverse lookup via `find_person_by_phone` (e.g. matching a Twilio caller ID) |
+| `sms_opted_in` | boolean | `true` | Real consent state for outbound SMS via this person's `phone_number` -- set only by an inbound-SMS webhook when the person's own phone sends a recognized opt-in/opt-out keyword (e.g. YES/START/STOP), never by a consuming integration on their behalf |
 | `preferred_name` | string | `"Shell"` | How they like to be addressed, distinct from the `person` entity's formal name |
 | `gender` | string | `"female"` | Free text, not a restricted enum — how a consuming integration uses this (e.g. pronoun selection) is its own decision, not part of this convention |
 | `occupation` | string | `"software engineer"` | |
