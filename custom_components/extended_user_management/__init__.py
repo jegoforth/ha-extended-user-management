@@ -38,7 +38,10 @@ VERIFY_PIN_SCHEMA = vol.Schema({
 # Deliberately generic rather than validating specific well-known keys --
 # those are a documented convention (see README), not something this
 # integration enforces in code.
-_SCALAR = vol.Any(cv.string, cv.boolean, vol.Coerce(float), None)
+# cv.boolean must be tried before cv.string: cv.string coerces any non-list/dict
+# value via str(value), so a real bool would otherwise always match cv.string
+# first and get silently stringified to "True"/"False" instead of staying a bool.
+_SCALAR = vol.Any(cv.boolean, cv.string, vol.Coerce(float), None)
 _FLAT_RECORD = vol.Schema({cv.string: _SCALAR})
 PROFILE_VALUE_SCHEMA = vol.Any(_SCALAR, [_SCALAR], [_FLAT_RECORD])
 
