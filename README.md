@@ -93,6 +93,8 @@ list of flat string-keyed records (for `important_people`).
 | `interests` | list[string] | `["Scottish history", "true crime podcasts"]` | Broader than hobbies — topics they like discussing |
 | `food_preferences` | list[string] | `["spicy food", "whole grains"]` | |
 | `food_restrictions` | list[string] | `["no nuts", "vegetarian"]` | Allergies/diet — household-relevant, not medical-sensitivity data |
+| `restaurant_likes` | list[string] | `["Chick-fil-A"]` | Specific restaurants/chains enjoyed — distinct from `food_preferences` (cuisine/food types) and `food_restrictions` (dietary/allergy, not taste) |
+| `restaurant_dislikes` | list[string] | `["Burger King"]` | Specific restaurants/chains to avoid, same distinction as `restaurant_likes` |
 | `music_preferences` | list[string] | `["Fleetwood Mac", "classic rock"]` | |
 | `entertainment_preferences` | list[string] | `["Outlander", "true crime documentaries"]` | |
 | `important_people` | list[{name, relationship}] | `[{"name": "Grace", "relationship": "daughter"}]` | The one structured key |
