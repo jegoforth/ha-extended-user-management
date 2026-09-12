@@ -124,8 +124,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                                  supports_response=SupportsResponse.ONLY)
 
     www_path = Path(__file__).parent / "www"
+    # cache_headers=False: this card is actively iterated on (small file,
+    # admin-only, low traffic) -- aggressive caching here has already once
+    # left a browser stuck on a stale bundle after an update.
     await hass.http.async_register_static_paths(
-        [StaticPathConfig(WWW_URL_PATH, str(www_path), True)]
+        [StaticPathConfig(WWW_URL_PATH, str(www_path), False)]
     )
     return True
 
