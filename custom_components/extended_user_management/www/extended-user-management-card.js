@@ -19,6 +19,7 @@ class ExtendedUserManagementCard extends HTMLElement {
     }
     this._status = {};
     this._phoneNumbers = {};
+    this._smsOptedIn = {};
     this._rowErrors = {};
     this._render();
   }
@@ -74,6 +75,7 @@ class ExtendedUserManagementCard extends HTMLElement {
       return;
     }
     await this._refreshPhoneNumbers();
+    await this._refreshSmsOptedIn();
     this._render();
   }
 
@@ -99,6 +101,31 @@ class ExtendedUserManagementCard extends HTMLElement {
       })
     );
     this._phoneNumbers = Object.fromEntries(entries);
+  }
+
+  async _refreshSmsOptedIn() {
+    // Read-only display: sms_opted_in is only ever written by the Twilio
+    // inbound-SMS webhook reacting to a real keyword from the person's own
+    // phone (see the README's well-known-keys table) -- this card never
+    // writes it, it only shows the current state for reference.
+    const entries = await Promise.all(
+      Object.keys(this._status).map(async (entityId) => {
+        try {
+          const result = await this._hass.callWS({
+            type: "call_service",
+            domain: "extended_user_management",
+            service: "get_profile_value",
+            service_data: { person_entity_id: entityId, key: "sms_opted_in" },
+            return_response: true,
+          });
+          const value = result && result.response && result.response.value;
+          return [entityId, value === true];
+        } catch (err) {
+          return [entityId, false];
+        }
+      })
+    );
+    this._smsOptedIn = Object.fromEntries(entries);
   }
 
   async _setPin(entityId, pin) {
@@ -164,6 +191,7 @@ class ExtendedUserManagementCard extends HTMLElement {
     const error = this._rowErrors[entityId];
     const statusLabel = status.locked_out ? "Locked out" : status.has_pin ? "PIN set" : "No PIN";
     const phoneNumber = this._phoneNumbers[entityId] || "";
+    const optedIn = this._smsOptedIn[entityId] === true;
     return `
       <div class="person" data-entity="${ExtendedUserManagementCard._escapeHtml(entityId)}">
         <div class="row">
@@ -177,6 +205,10 @@ class ExtendedUserManagementCard extends HTMLElement {
           <span class="name phone-label">Phone number</span>
           <input type="tel" placeholder="+15551234567" class="phone-input" autocomplete="off" value="${ExtendedUserManagementCard._escapeHtml(phoneNumber)}" />
           <button class="phone-save-btn">Save</button>
+        </div>
+        <div class="row">
+          <span class="name phone-label">Texts</span>
+          <span class="sms-status${optedIn ? " opted-in" : " opted-out"}">${optedIn ? "Opted in" : "Not opted in"}</span>
         </div>
         ${error ? `<div class="error">${ExtendedUserManagementCard._escapeHtml(error)}</div>` : ""}
       </div>
@@ -199,6 +231,9 @@ class ExtendedUserManagementCard extends HTMLElement {
         .name.phone-label { font-weight: 400; color: var(--secondary-text-color); }
         .status { font-size: 0.85em; color: var(--secondary-text-color); min-width: 80px; }
         .status.locked { color: var(--error-color); }
+        .sms-status { font-size: 0.85em; }
+        .sms-status.opted-in { color: var(--success-color, #43a047); }
+        .sms-status.opted-out { color: var(--secondary-text-color); }
         input[type="password"], input[type="tel"] { width: 140px; padding: 6px; border: 1px solid var(--divider-color); border-radius: 4px; background: var(--card-background-color); color: var(--primary-text-color); }
         button { padding: 6px 12px; border: none; border-radius: 4px; background: var(--primary-color); color: var(--text-primary-color, #fff); cursor: pointer; }
         button:disabled { opacity: 0.4; cursor: default; }
