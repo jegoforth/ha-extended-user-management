@@ -62,12 +62,12 @@ class PinTests(unittest.TestCase):
 
     def test_correct_and_incorrect_verification(self):
         record = pin.new_pin_record("4471")
-        self.assertTrue(pin.verify("person.shelley", "4471", record))
+        self.assertTrue(pin.verify("person.alex", "4471", record))
         pin._failures.clear()
-        self.assertFalse(pin.verify("person.shelley", "0000", record))
+        self.assertFalse(pin.verify("person.alex", "0000", record))
 
     def test_missing_record_fails_closed(self):
-        self.assertFalse(pin.verify("person.shelley", "1234", None))
+        self.assertFalse(pin.verify("person.alex", "1234", None))
 
     def test_each_record_uses_a_distinct_salt(self):
         first = pin.new_pin_record("1234")
@@ -79,12 +79,12 @@ class PinTests(unittest.TestCase):
         record = pin.new_pin_record("9999")
         now = 1000.0
         for _ in range(pin.MAX_PIN_ATTEMPTS):
-            pin.verify("person.eric", "0000", record, now=now)
-        self.assertTrue(pin.locked_out("person.eric", now=now))
-        self.assertFalse(pin.verify("person.eric", "9999", record, now=now))
+            pin.verify("person.sam", "0000", record, now=now)
+        self.assertTrue(pin.locked_out("person.sam", now=now))
+        self.assertFalse(pin.verify("person.sam", "9999", record, now=now))
         later = now + pin.LOCKOUT_SECONDS + 1
-        self.assertFalse(pin.locked_out("person.eric", now=later))
-        self.assertTrue(pin.verify("person.eric", "9999", record, now=later))
+        self.assertFalse(pin.locked_out("person.sam", now=later))
+        self.assertTrue(pin.verify("person.sam", "9999", record, now=later))
 
 
 if __name__ == "__main__":
