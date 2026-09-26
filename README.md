@@ -10,7 +10,7 @@ automations can read and write.
 Home Assistant's `person` entities identify *who* lives in your household,
 but there's no built-in way to attach durable, per-person data beyond
 presence tracking — no PIN for a voice assistant to confirm "yes, that's
-actually Shelley" before doing something consequential, no general-purpose
+actually Alex" before doing something consequential, no general-purpose
 place to store a household member's preferences that other integrations
 could read.
 
@@ -72,7 +72,7 @@ profile data, not a secret, so they round-trip through `get_profile_value`/
 ## Well-known profile keys
 
 `set_profile_value`/`get_profile_value` accept any key — this is a
-documented convention for interoperability between consumers (Elspeth,
+documented convention for interoperability between consumers (a voice assistant,
 someone else's HA Assist automation, whatever), not something enforced in
 code. Using these names where they fit means multiple integrations can
 share the same household context instead of each inventing its own
@@ -85,11 +85,11 @@ list of flat string-keyed records (for `important_people`).
 |---|---|---|---|
 | `phone_number` | string | `"+15551234567"` | E.164 recommended for exact-match reverse lookup via `find_person_by_phone` (e.g. matching a Twilio caller ID) |
 | `sms_opted_in` | boolean | `true` | Real consent state for outbound SMS via this person's `phone_number` -- set only by an inbound-SMS webhook when the person's own phone sends a recognized opt-in/opt-out keyword (e.g. YES/START/STOP), never by a consuming integration on their behalf |
-| `preferred_name` | string | `"Shell"` | How they like to be addressed, distinct from the `person` entity's formal name |
+| `preferred_name` | string | `"Lex"` | How they like to be addressed, distinct from the `person` entity's formal name |
 | `gender` | string | `"female"` | Free text, not a restricted enum — how a consuming integration uses this (e.g. pronoun selection) is its own decision, not part of this convention |
 | `occupation` | string | `"software engineer"` | |
 | `work_schedule` | string | `"remote, flexible hours"` | Free text, not structured — too varied to force into a schema |
-| `communication_style` | string | `"concise, direct recommendations"` | Useful to *any* conversation agent, not just Elspeth |
+| `communication_style` | string | `"concise, direct recommendations"` | Useful to *any* conversation agent, not just one |
 | `hobbies` | list[string] | `["gardening", "chess"]` | |
 | `interests` | list[string] | `["Scottish history", "true crime podcasts"]` | Broader than hobbies — topics they like discussing |
 | `food_preferences` | list[string] | `["spicy food", "whole grains"]` | |
@@ -98,7 +98,7 @@ list of flat string-keyed records (for `important_people`).
 | `restaurant_dislikes` | list[string] | `["Burger King"]` | Specific restaurants/chains to avoid, same distinction as `restaurant_likes` |
 | `music_preferences` | list[string] | `["Fleetwood Mac", "classic rock"]` | |
 | `entertainment_preferences` | list[string] | `["Outlander", "true crime documentaries"]` | |
-| `important_people` | list[{name, relationship}] | `[{"name": "Grace", "relationship": "daughter"}]` | The one structured key |
+| `important_people` | list[{name, relationship}] | `[{"name": "Sam", "relationship": "daughter"}]` | The one structured key |
 | `daily_routines` | string | `"morning run around 6am"` | |
 | `travel_preferences` | list[string] | `["historical sites", "quiet beach towns"]` | |
 | `current_focus` | string | `"planning a kitchen renovation"` | What's got their attention lately — deliberately not durable/permanent-feeling |
